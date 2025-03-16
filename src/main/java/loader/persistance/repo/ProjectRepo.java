@@ -110,12 +110,7 @@ public class ProjectRepo implements VersionedRepository<String, Project>
         try(RemoteDatabase remoteDB = database.get())
         {
             remoteDB.begin();
-            ResultSet rs = remoteDB.command("sql", sql, Map.ofEntries(
-                    new AbstractMap.SimpleEntry<>("key", project.getKey()),
-                    new AbstractMap.SimpleEntry<>("name", project.getName()),
-                    new AbstractMap.SimpleEntry<>("description", project.getDescription()),
-                    new AbstractMap.SimpleEntry<>("inserted_at", project.getInsertedAt().format(DateTimeFormatter.ISO_DATE_TIME))
-            ));
+            ResultSet rs = remoteDB.command("sql", sql, projectToParams(project));
             if(rs.hasNext())
             {
                 Result result = rs.next();
@@ -126,6 +121,7 @@ public class ProjectRepo implements VersionedRepository<String, Project>
                     edgeRepository.create("has_project_state", rid, versionedProject.getRid());
                     edgeRepository.reconnect("latest_project_state", versionedProject, rid);
                     remoteDB.commit();
+                    LOG.info("Successfully persisted new version of project {}", project.getKey());
                     return project;
                 }
             }
@@ -137,6 +133,16 @@ public class ProjectRepo implements VersionedRepository<String, Project>
     @Override
     public Project delete(Project entity) {
         throw new NotImplementedYet();
+    }
+
+    private Map<String, String> projectToParams(Project project)
+    {
+        return Map.ofEntries(
+            new AbstractMap.SimpleEntry<>("key", project.getKey()),
+            new AbstractMap.SimpleEntry<>("name", project.getName()),
+            new AbstractMap.SimpleEntry<>("description", project.getDescription()),
+            new AbstractMap.SimpleEntry<>("inserted_at", project.getInsertedAt().format(DateTimeFormatter.ISO_DATE_TIME))
+        );
     }
 
     private Optional<Project> resultSetToOptionalProject(ResultSet resultSet)

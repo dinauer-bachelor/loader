@@ -24,7 +24,7 @@ public class DatabaseUtils
 
     private static final String DROP_TYPE = "DROP TYPE %s IF EXISTS UNSAFE;";
 
-    @ConfigProperty(name = "arcadedb.dev-services.enabled")
+    @ConfigProperty(name = "arcadedb.clear")
     Boolean devServicesEnabled;
 
     @Inject
@@ -35,7 +35,7 @@ public class DatabaseUtils
     {
         if(devServicesEnabled)
         {
-            //setup();
+            setup();
         }
     }
 
