@@ -1,12 +1,14 @@
 package loader.persistance;
 
+import java.time.ZonedDateTime;
 import java.util.Objects;
 
-public class Project
+public class Project extends Entity
 {
     private String key;
     private String name;
     private String description;
+    private ZonedDateTime insertedAt;
 
     public String getKey() {
         return key;
@@ -35,6 +37,15 @@ public class Project
 
     public Project setDescription(String description) {
         this.description = description;
+        return this;
+    }
+
+    public ZonedDateTime getInsertedAt() {
+        return insertedAt;
+    }
+
+    public Project setInsertedAt(ZonedDateTime insertedAt) {
+        this.insertedAt = insertedAt;
         return this;
     }
 

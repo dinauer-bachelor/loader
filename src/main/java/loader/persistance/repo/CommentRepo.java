@@ -1,6 +1,9 @@
 package loader.persistance.repo;
 
+import com.arcadedb.database.RID;
 import loader.persistance.Comment;
+import loader.persistance.VersionedEntity;
+import org.apache.kafka.common.protocol.types.Field;
 import org.jboss.resteasy.reactive.common.NotImplementedYet;
 
 import java.util.List;
@@ -9,9 +12,14 @@ import java.util.Optional;
 public class CommentRepo implements VersionedRepository<String, Comment>
 {
     @Override
-    public String init(String key)
+    public VersionedEntity<String, Comment> init(String key)
     {
         throw new NotImplementedYet();
+    }
+
+    @Override
+    public Optional<VersionedEntity<String, Comment>> exists(String key) {
+        return Optional.empty();
     }
 
     @Override

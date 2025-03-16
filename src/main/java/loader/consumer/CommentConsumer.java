@@ -5,6 +5,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.enterprise.context.ApplicationScoped;
 import loader.persistance.Project;
 import org.eclipse.microprofile.reactive.messaging.Incoming;
+import org.jboss.resteasy.reactive.common.NotImplementedYet;
 
 @ApplicationScoped
 public class CommentConsumer
@@ -12,6 +13,6 @@ public class CommentConsumer
     @Incoming("comments")
     public void consume(Project project) throws JsonProcessingException
     {
-        System.out.println(new ObjectMapper().writeValueAsString(project));
+        throw new NotImplementedYet();
     }
 }
