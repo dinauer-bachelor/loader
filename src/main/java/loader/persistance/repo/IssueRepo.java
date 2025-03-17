@@ -1,64 +1,69 @@
 package loader.persistance.repo;
 
-import com.arcadedb.database.RID;
+import com.arcadedb.database.Record;
+import com.arcadedb.graph.Vertex;
+import com.arcadedb.query.sql.executor.Result;
 import com.arcadedb.query.sql.executor.ResultSet;
 import com.arcadedb.remote.RemoteDatabase;
+import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
 import loader.persistance.Issue;
-import loader.persistance.VersionedEntity;
-import org.apache.kafka.common.protocol.types.Field;
+import loader.persistance.Project;
 import org.jboss.resteasy.reactive.common.NotImplementedYet;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.time.ZonedDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.AbstractMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
+@ApplicationScoped
 public class IssueRepo implements VersionedRepository<String, Issue>
 {
     private static final Logger LOG = LoggerFactory.getLogger(IssueRepo.class);
 
+    private final static String LATEST_STATE = "latest_issue_state";
+
+    private final static String HAS_STATE = "has_issue_state";
+
     @Inject
     Database database;
 
-    @Override
-    public VersionedEntity<String, Issue> init(String id)
+    @Inject
+    ProjectRepo projectRepo;
+
+    public Vertex init(String issueKey, String projectKey)
     {
-        Optional<VersionedEntity<String, Issue>> exists = exists(id);
+        Optional<Vertex> exists = exists(issueKey);
         if(exists.isEmpty())
         {
             try(RemoteDatabase remoteDB = database.get())
             {
-                String sql = "INSERT INTO issue_id(id) VALUES(:id)";
-                ResultSet rs = remoteDB.command("sql", sql, Map.ofEntries(new AbstractMap.SimpleEntry<>("id", id)));
-                LOG.info("Successfully initialized issue {}", id);
-                if(rs.hasNext())
-                {
-                    Optional<RID> rid = rs.next().getIdentity();
-                    if(rid.isPresent())
-                    {
-                        return new VersionedEntity<>();
-                    }
-                }
-                throw new RuntimeException(String.format("Failed to initialize project %s", id));
+                remoteDB.begin();
+                Vertex issue = remoteDB.newVertex("issue_id").set("key", issueKey).save();
+                Vertex project = remoteDB.lookupByRID(projectRepo.init(projectKey).getIdentity()).asVertex();
+                project.newEdge("belongs_to_project", issue, false).save();
+                remoteDB.commit();
+                LOG.info("Initialized issue '{}'", issueKey);
+                return issue;
             }
         } else
         {
-            LOG.info("Issue {} already exists", id);
             return exists.get();
         }
     }
 
     @Override
-    public Optional<VersionedEntity<String, Issue>> exists(String key) {
-        String sql = "SELECT * FROM issue_id WHERE id = :id;";
+    public Optional<Vertex> exists(String key) {
+        String sql = "SELECT FROM issue_id WHERE key = :key;";
         try(RemoteDatabase remoteDB = database.get()) {
-            ResultSet rs = remoteDB.command("sql", sql, Map.ofEntries(new AbstractMap.SimpleEntry<>("id", key)));
+            ResultSet rs = remoteDB.command("sql", sql, Map.ofEntries(new AbstractMap.SimpleEntry<>("key", key)));
             if(rs.hasNext())
             {
-                return Optional.empty();
+                return rs.next().getVertex();
             } else
             {
                 return Optional.empty();
@@ -69,7 +74,16 @@ public class IssueRepo implements VersionedRepository<String, Issue>
     @Override
     public Optional<Issue> findById(String key)
     {
-        throw new NotImplementedYet();
+        Optional<Vertex> x = exists(key);
+        if(x.isPresent()) {
+            String sql = String.format("SELECT expand(@in) FROM %s WHERE @out = :out;", LATEST_STATE);
+            try(RemoteDatabase remoteDB = database.get())
+            {
+                ResultSet rs = remoteDB.command("sql", sql, Map.ofEntries(new AbstractMap.SimpleEntry<>("out", x.get().getIdentity())));
+                return resultSetToOptionalIssue(rs);
+            }
+        }
+        return Optional.empty();
     }
 
     @Override
@@ -81,12 +95,53 @@ public class IssueRepo implements VersionedRepository<String, Issue>
     @Override
     public Issue persist(Issue entity)
     {
-        throw new NotImplementedYet();
+        Vertex versionedIssue = init(entity.getKey(), entity.getProjectKey());
+        try(RemoteDatabase remoteDB = database.get())
+        {
+            remoteDB.begin();
+            Vertex issueState = remoteDB.newVertex("issue")
+                .set("key", entity.getKey())
+                .set("project_key", entity.getProjectKey())
+                .set("summary", entity.getSummary())
+                .set("description", entity.getDescription())
+                .save();
+            Vertex base = remoteDB.lookupByRID(versionedIssue.getIdentity()).asVertex();
+            base.newEdge(HAS_STATE, issueState, false);
+            reconnectLatestState(base, issueState);
+            remoteDB.commit();
+            LOG.info("Persisted state of issue '{}'", entity.getKey());
+        }
+        return entity;
     }
 
     @Override
     public Issue delete(Issue entity)
     {
         throw new NotImplementedYet();
+    }
+
+    private Optional<Issue> resultSetToOptionalIssue(ResultSet resultSet)
+    {
+        if(resultSet.hasNext())
+        {
+            Result result = resultSet.next();
+            if(result.getIdentity().isPresent())
+            {
+                Issue issue =  new Issue();
+                issue.setRid(result.getIdentity().get().toString());
+                issue.setKey(result.getProperty("key"));
+                issue.setProjectKey(result.getProperty("project_key"));
+                issue.setSummary(result.getProperty("summary"));
+                issue.setDescription(result.getProperty("description"));
+                return Optional.of(issue);
+            }
+        }
+        return Optional.empty();
+    }
+
+    private void reconnectLatestState(Vertex base, Vertex latestState)
+    {
+        base.getEdges(Vertex.DIRECTION.OUT, LATEST_STATE).forEach(Record::delete);
+        base.newEdge(LATEST_STATE, latestState, true);
     }
 }

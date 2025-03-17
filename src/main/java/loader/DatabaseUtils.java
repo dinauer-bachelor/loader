@@ -56,8 +56,10 @@ public class DatabaseUtils
         reset();
         try(RemoteDatabase remoteDB = database.get())
         {
+            remoteDB.begin();
             String sql = Resources.toString(Resources.getResource("import.sql"), Charsets.UTF_8);
             remoteDB.command(Database.SQL_SCRIPT, sql);
+            remoteDB.commit();
             LOG.info("Database setup successful");
         } catch (IOException e)
         {

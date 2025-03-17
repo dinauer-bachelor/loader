@@ -1,11 +1,15 @@
 package loader.persistence.repo;
 
+import com.arcadedb.graph.Vertex;
 import io.quarkus.test.junit.QuarkusTest;
 import jakarta.inject.Inject;
+import loader.DatabaseUtils;
 import loader.persistance.Project;
 import loader.persistance.VersionedEntity;
+import loader.persistance.repo.Database;
 import loader.persistance.repo.ProjectRepo;
 import loader.service.ProjectService;
+import org.graalvm.nativebridge.In;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
@@ -17,26 +21,34 @@ import java.util.Optional;
 public class ProjectRepoTest
 {
     @Inject
+    DatabaseUtils databaseUtils;
+
+    @Inject
     ProjectRepo projectRepo;
 
     @Test
     void initProject()
     {
+        databaseUtils.setup();
+
         // Given
         String projectId = "KAH";
 
         // When
-        VersionedEntity<String, Project> versionedProject = projectRepo.init(projectId);
+        Vertex versionedProject = projectRepo.init(projectId);
+        projectRepo.init(projectId);
 
         // Then
-        Assertions.assertEquals(0, versionedProject.getCount());
-        Assertions.assertEquals("KAH", versionedProject.getId());
-        Assertions.assertNotNull(versionedProject.getRid());
+        Assertions.assertEquals(0, versionedProject.getInteger("count"));
+        Assertions.assertEquals("KAH", versionedProject.getString("key"));
+        Assertions.assertNotNull(versionedProject.getIdentity());
     }
 
     @Test
     void persistAndFindProject()
     {
+        databaseUtils.setup();
+
         // Given
         Project project1 = new Project().setName("Menuflow").setKey("KAH").setDescription("This project is for menuflow development.").setInsertedAt(ZonedDateTime.now(ZoneOffset.UTC));
         Project project2 = new Project().setName("Menuflow #2").setKey("KAH").setDescription("This project is for menuflow development.").setInsertedAt(ZonedDateTime.now(ZoneOffset.UTC));

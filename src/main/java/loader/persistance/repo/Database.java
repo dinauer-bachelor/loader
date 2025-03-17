@@ -10,6 +10,7 @@ import org.eclipse.microprofile.config.inject.ConfigProperty;
 public class Database
 {
     public static final String SQL_SCRIPT = "sqlscript";
+    public static final String SQL = "sqlscript";
 
     @ConfigProperty(name = "arcadedb.host")
     String host;

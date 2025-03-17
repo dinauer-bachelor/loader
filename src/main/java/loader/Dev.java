@@ -56,9 +56,6 @@ public class Dev
 
     private void init()
     {
-        String projectId = "LEK";
-        VersionedEntity<String, Project> r = projectRepo.init(projectId);
-        System.out.println(r);
     }
 
     private void persistProject(Project project)

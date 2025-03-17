@@ -3,7 +3,7 @@ package loader.persistance;
 import java.time.ZonedDateTime;
 import java.util.List;
 
-public class Issue
+public class Issue extends Entity
 {
     private String key;
     private String summary;
@@ -12,6 +12,7 @@ public class Issue
     private String issuetype;
     private String status;
     private List<String> components;
+    private String projectKey;
 
     public String getKey()
     {
@@ -87,6 +88,15 @@ public class Issue
     public Issue setComponents(List<String> components)
     {
         this.components = components;
+        return this;
+    }
+
+    public String getProjectKey() {
+        return projectKey;
+    }
+
+    public Issue setProjectKey(String projectKey) {
+        this.projectKey = projectKey;
         return this;
     }
 }
