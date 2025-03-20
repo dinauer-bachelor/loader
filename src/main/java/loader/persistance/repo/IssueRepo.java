@@ -44,7 +44,7 @@ public class IssueRepo implements VersionedRepository<String, Issue>
             {
                 remoteDB.begin();
                 Vertex issue = remoteDB.newVertex("issue_id").set("key", issueKey).save();
-                Vertex project = remoteDB.lookupByRID(projectRepo.init(projectKey).getIdentity()).asVertex();
+                Vertex project = remoteDB.lookupByRID(projectRepo.init(projectKey).getIdentity()).asVertex(); // Initialized and retrieves the corresponding project for creating its edge
                 project.newEdge("belongs_to_project", issue, false).save();
                 remoteDB.commit();
                 LOG.info("Initialized issue '{}'", issueKey);
@@ -104,6 +104,8 @@ public class IssueRepo implements VersionedRepository<String, Issue>
                 .set("project_key", entity.getProjectKey())
                 .set("summary", entity.getSummary())
                 .set("description", entity.getDescription())
+                .set("status", entity.getStatus())
+                .set("inserted_at", entity.getCreatedAt().format(DateTimeFormatter.ISO_DATE_TIME))
                 .save();
             Vertex base = remoteDB.lookupByRID(versionedIssue.getIdentity()).asVertex();
             base.newEdge(HAS_STATE, issueState, false);

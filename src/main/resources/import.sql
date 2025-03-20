@@ -30,6 +30,8 @@ CREATE PROPERTY issue.key STRING;
 CREATE PROPERTY issue.project_key STRING;
 CREATE PROPERTY issue.summary STRING;
 CREATE PROPERTY issue.description STRING;
+CREATE PROPERTY issue.inserted_at STRING;
+CREATE PROPERTY issue.status STRING;
 
 CREATE EDGE TYPE has_issue_state;
 CREATE EDGE TYPE latest_issue_state;
