@@ -6,6 +6,8 @@ import com.arcadedb.remote.RemoteServer;
 import jakarta.enterprise.context.ApplicationScoped;
 import org.eclipse.microprofile.config.inject.ConfigProperty;
 
+import java.util.List;
+
 @ApplicationScoped
 public class Database
 {
@@ -29,6 +31,16 @@ public class Database
 
     public RemoteDatabase get()
     {
+        RemoteServer remoteServer = getServer();
+        List<String> databases = remoteServer.databases();
+        if(!databases.contains(database)) {
+            remoteServer.create(database);
+        }
         return new RemoteDatabase(host, port, database, user, password);
+    }
+
+    private RemoteServer getServer()
+    {
+        return new RemoteServer(host, port, user, password);
     }
 }

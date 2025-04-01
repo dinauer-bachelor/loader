@@ -2,6 +2,7 @@ package loader;
 
 import com.arcadedb.remote.RemoteDatabase;
 import com.arcadedb.remote.RemoteSchema;
+import com.arcadedb.remote.RemoteServer;
 import com.arcadedb.schema.DocumentType;
 import com.google.common.base.Charsets;
 import com.google.common.io.Resources;

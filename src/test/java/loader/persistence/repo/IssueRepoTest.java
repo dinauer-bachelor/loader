@@ -10,12 +10,14 @@ import loader.persistance.VersionedEntity;
 import loader.persistance.repo.IssueRepo;
 import loader.persistance.repo.ProjectRepo;
 import org.graalvm.nativebridge.In;
+import org.hamcrest.core.Is;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 
 import java.time.ZoneOffset;
 import java.time.ZonedDateTime;
+import java.util.List;
 import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -69,5 +71,19 @@ public class IssueRepoTest
         assertEquals("KEH-233", optionalIssue.get().getKey());
         assertEquals("Problem at step 3", optionalIssue.get().getSummary());
         assertEquals("A problem occurred during manufacturing", optionalIssue.get().getDescription());
+    }
+
+    @Test
+    void testFindAll()
+    {
+        List<VersionedEntity<String, Issue>> versionedEntities = issueRepo.findAllVersions();
+
+        // then
+        Issue first = versionedEntities.getFirst().getLatest();
+
+        Assertions.assertEquals(22, versionedEntities.size());
+        Assertions.assertNotNull(versionedEntities.getFirst().getLatest());
+        Assertions.assertTrue(!first.getSummary().isEmpty());
+        Assertions.assertTrue(!first.getDescription().isEmpty());
     }
 }

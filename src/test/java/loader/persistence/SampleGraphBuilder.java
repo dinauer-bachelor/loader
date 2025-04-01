@@ -3,6 +3,7 @@ package loader.persistence;
 import io.quarkus.test.junit.QuarkusTest;
 import jakarta.inject.Inject;
 import loader.DatabaseUtils;
+import loader.persistance.Comment;
 import loader.persistance.Issue;
 import loader.persistance.Project;
 import loader.persistance.repo.CommentRepo;
@@ -57,6 +58,16 @@ class SampleGraphBuilder
             .setName("Chassis Alignment Quality Assurance")
             .setDescription("This project ensures the precision of chassis alignment during the assembly of the 'Raptor X' electric SUV, aiming to eliminate misalignment errors.")
             .setInsertedAt(ZonedDateTime.now(ZoneOffset.UTC)));
+        projectRepo.persist(new Project()
+            .setKey("FMN")
+            .setName("Facility Management Nuremberg")
+            .setDescription("This project is about ensuring our production plant in Nuremberg is always ready.")
+            .setInsertedAt(ZonedDateTime.now(ZoneOffset.UTC).minusDays(5)));
+        projectRepo.persist(new Project()
+            .setKey("FMA")
+            .setName("Facility Management Augsburg")
+            .setDescription("FMA was introduced to make sure our manufacturing plant in Augsburg is up and running every day.")
+            .setInsertedAt(ZonedDateTime.now(ZoneOffset.UTC).minusDays(10)));
 
         // Issues
         issueRepo.persist(new Issue()
@@ -64,24 +75,30 @@ class SampleGraphBuilder
             .setProjectKey("KAH")
             .setSummary("Problem with mounting part LO8344 to machine.")
             .setDescription("Part LO8344 was damaged and could not be mounted.")
+            .setReporter("Alex Weber (Sicherheitsdienst)")
             .setCreatedAt(ZonedDateTime.now(ZoneOffset.UTC)));
         issueRepo.persist(new Issue()
             .setKey("KAH-345")
             .setProjectKey("KAH")
             .setSummary("Problem with mounting part LO8344 to machine.")
             .setDescription("Part LO8344 was damaged and could not be mounted. EDIT: We found out that our forklift operator did this.")
+            .setIssuetype("bug")
+            .setReporter("Alex Weber (Sicherheitsdienst)")
             .setCreatedAt(ZonedDateTime.now(ZoneOffset.UTC).minusDays(3)));
         issueRepo.persist(new Issue()
             .setKey("KAH-346")
             .setProjectKey("KAH")
             .setSummary("Problem with mounting part UZ5342.")
             .setDescription("The part was delivered too late and was returned. This needs to be improved.")
+            .setIssuetype("bug")
             .setCreatedAt(ZonedDateTime.now(ZoneOffset.UTC)));
         issueRepo.persist(new Issue()
             .setKey("KAH-347")
             .setProjectKey("KAH")
             .setSummary("Engine did not start at end of production of model CF3GT.")
             .setDescription("The vehicle could not be started due to an error with its engine. Most likely wrong engine mounted.")
+            .setIssuetype("bug")
+            .setAssignee("Lena Mayer")
             .setCreatedAt(ZonedDateTime.now(ZoneOffset.UTC)));
         issueRepo.persist(new Issue()
             .setKey("PUH-67")
@@ -94,6 +111,7 @@ class SampleGraphBuilder
             .setProjectKey("PUH")
             .setSummary("Marco brought his cat with him to work.")
             .setDescription("Marco was sent home today and we needed to stop our production due to him bringing his cat to work. This was expensive for us.")
+            .setAssignee("Lena Mayer")
             .setCreatedAt(ZonedDateTime.now(ZoneOffset.UTC).minusDays(12)));
         issueRepo.persist(new Issue()
             .setKey("PUH-69")
@@ -143,7 +161,24 @@ class SampleGraphBuilder
             .setCreatedAt(ZonedDateTime.now(ZoneOffset.UTC)));
 
         // Comments
-        commentRepo.init("20001", "KAH-345", "KAH");
+        commentRepo.persist(new Comment()
+            .setId("20001")
+            .setIssueKey("KAH-345")
+            .setProjectKey("KAH")
+            .setText("I saw him driving with a bottle of beer in his hands. Probably drunk. Was drinking beer the whole day already.")
+            .setAuthor("Der Verpetzer"));
+        commentRepo.persist(new Comment()
+            .setId("20010")
+            .setIssueKey("KAH-345")
+            .setProjectKey("KAH")
+            .setText("He was out of control driving trough our production facility yelling 'Get out the way. Mr Beer comes along.'")
+            .setAuthor("Eric Eriksen"));
+        commentRepo.persist(new Comment()
+            .setId("20010")
+            .setIssueKey("PUH-69")
+            .setProjectKey("PUH")
+            .setText("I just wanted to repot that I Marcos cat actually bit me. I will provide a sick note for today and recover until tomorrow.'")
+            .setAuthor("Ingo Hauser"));
         commentRepo.init("20002", "KAH-346", "KAH");
         commentRepo.init("20003", "KAH-347", "KAH");
         commentRepo.init("20004", "PUH-67", "PUH");

@@ -1,11 +1,13 @@
 package loader.persistance.repo;
 
+import jakarta.enterprise.context.ApplicationScoped;
 import loader.persistance.Issuetype;
 import org.jboss.resteasy.reactive.common.NotImplementedYet;
 
 import java.util.List;
 import java.util.Optional;
 
+@ApplicationScoped
 public class IssuetypeRepo implements Repository<String, Issuetype>
 {
     @Override

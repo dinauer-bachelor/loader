@@ -8,6 +8,7 @@ import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
 import loader.persistance.Comment;
 import loader.persistance.Issue;
+import loader.persistance.Project;
 import loader.persistance.VersionedEntity;
 import org.apache.kafka.common.protocol.types.Field;
 import org.jboss.resteasy.reactive.common.NotImplementedYet;
@@ -37,18 +38,16 @@ public class CommentRepo implements VersionedRepository<String, Comment>
 
     public Vertex init(String commentId, String issueKey, String projectKey)
     {
-        Optional<Vertex> exists = exists(issueKey);
+        Optional<Vertex> exists = exists(commentId);
         if(exists.isEmpty())
         {
             try(RemoteDatabase remoteDB = database.get())
             {
-                remoteDB.begin();
                 Vertex comment = remoteDB.newVertex("comment_id").set("id", commentId).save();
                 Vertex issue = remoteDB.lookupByRID(issueRepo.init(issueKey, projectKey).getIdentity()).asVertex(); // Initialized and retrieves the corresponding issue for creating its edge
                 issue.newEdge("belongs_to_issue", comment, false).save();
-                remoteDB.commit();
                 LOG.info("Initialized comment '{}'", commentId);
-                return issue;
+                return comment;
             }
         } else
         {
@@ -69,6 +68,12 @@ public class CommentRepo implements VersionedRepository<String, Comment>
                 return Optional.empty();
             }
         }
+    }
+
+    @Override
+    public List<VersionedEntity<String, Comment>> findAllVersions()
+    {
+        throw new NotImplementedYet();
     }
 
     @Override
@@ -95,21 +100,22 @@ public class CommentRepo implements VersionedRepository<String, Comment>
     @Override
     public Comment persist(Comment entity)
     {
-        Vertex versionedIssue = init(entity.getId(), entity.getIssueKey(), entity.getProjectKey());
+        Vertex versionedComment = init(entity.getId(), entity.getIssueKey(), entity.getProjectKey());
         try(RemoteDatabase remoteDB = database.get())
         {
             remoteDB.begin();
-            Vertex issueState = remoteDB.newVertex("issue")
+            Vertex issueState = remoteDB.newVertex("comment")
                 .set("id", entity.getId())
                 .set("issue_key", entity.getIssueKey())
                 .set("project_key", entity.getProjectKey())
                 .set("text", entity.getText())
+                .set("author", entity.getAuthor())
                 .save();
-            Vertex base = remoteDB.lookupByRID(versionedIssue.getIdentity()).asVertex();
+            Vertex base = remoteDB.lookupByRID(versionedComment.getIdentity()).asVertex();
             base.newEdge(HAS_STATE, issueState, false);
             //reconnectLatestState(base, issueState);
             remoteDB.commit();
-            LOG.info("Persisted state of issue '{}'", entity.getId());
+            LOG.info("Persisted state of comment '{}'", entity.getId());
         }
         return entity;
     }

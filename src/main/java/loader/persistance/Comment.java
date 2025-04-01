@@ -6,6 +6,7 @@ public class Comment
     private String issueKey;
     private String projectKey;
     private String text;
+    private String author;
 
     public String getId()
     {
@@ -48,6 +49,15 @@ public class Comment
     public Comment setText(String text)
     {
         this.text = text;
+        return this;
+    }
+
+    public String getAuthor() {
+        return author;
+    }
+
+    public Comment setAuthor(String author) {
+        this.author = author;
         return this;
     }
 }

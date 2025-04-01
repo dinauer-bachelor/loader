@@ -1,33 +1,39 @@
 package loader.persistance.repo;
 
+import com.arcadedb.database.RID;
 import com.arcadedb.database.Record;
+import com.arcadedb.graph.Edge;
 import com.arcadedb.graph.Vertex;
 import com.arcadedb.query.sql.executor.Result;
 import com.arcadedb.query.sql.executor.ResultSet;
 import com.arcadedb.remote.RemoteDatabase;
+import com.arcadedb.schema.DocumentType;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
+import loader.SimilarityCalculator;
 import loader.persistance.Issue;
 import loader.persistance.Project;
+import loader.persistance.VersionedEntity;
 import org.jboss.resteasy.reactive.common.NotImplementedYet;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
-import java.util.AbstractMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
+import java.util.*;
 
 @ApplicationScoped
 public class IssueRepo implements VersionedRepository<String, Issue>
 {
     private static final Logger LOG = LoggerFactory.getLogger(IssueRepo.class);
 
+    private final static String VERTEX_TYPE = "issue";
+
     private final static String LATEST_STATE = "latest_issue_state";
 
     private final static String HAS_STATE = "has_issue_state";
+
+    private final static String IS_SIMILAR_TO = "is_similar_to";
 
     @Inject
     Database database;
@@ -37,6 +43,10 @@ public class IssueRepo implements VersionedRepository<String, Issue>
 
     public Vertex init(String issueKey, String projectKey)
     {
+        if(issueKey == null || projectKey == null)
+        {
+            throw new IllegalArgumentException("Issue key or project key cannot be null.");
+        }
         Optional<Vertex> exists = exists(issueKey);
         if(exists.isEmpty())
         {
@@ -50,7 +60,8 @@ public class IssueRepo implements VersionedRepository<String, Issue>
                 LOG.info("Initialized issue '{}'", issueKey);
                 return issue;
             }
-        } else
+        }
+        else
         {
             return exists.get();
         }
@@ -89,7 +100,41 @@ public class IssueRepo implements VersionedRepository<String, Issue>
     @Override
     public List<Issue> findAll()
     {
-        throw new NotImplementedYet();
+        return findAllVersions().stream().map(VersionedEntity::getLatest).toList();
+    }
+
+    @Override
+    public List<VersionedEntity<String, Issue>> findAllVersions()
+    {
+        String sql = "SELECT FROM issue_id";
+        try(RemoteDatabase remoteDB = database.get())
+        {
+            LOG.info("Executing SQL {}", sql);
+            List<Result> result = remoteDB.command(Database.SQL, sql).stream().toList();
+            List<VersionedEntity<String, Issue>> versionedIssues = new LinkedList<>();
+            for(Result r : result)
+            {
+                if(r.getVertex().isPresent())
+                {
+                    Vertex vertex = r.getVertex().get();
+                    VersionedEntity<String, Issue> issueVersionWrapper = new VersionedEntity<>();
+                    issueVersionWrapper.setRid(vertex.getIdentity());
+                    issueVersionWrapper.setId(vertex.getString("key"));
+                    Iterator<Edge> outgoingEdges = vertex.getEdges(Vertex.DIRECTION.OUT, LATEST_STATE).iterator();
+                    if(outgoingEdges.hasNext())
+                    {
+                        Vertex issueVertex = outgoingEdges.next().getInVertex();
+                        Optional<Issue> optionalIssue = vertexToIssue(issueVertex);
+                        if(optionalIssue.isPresent())
+                        {
+                            issueVersionWrapper.setLatest(optionalIssue.get());
+                            versionedIssues.add(issueVersionWrapper);
+                        }
+                    }
+                }
+            }
+            return versionedIssues;
+        }
     }
 
     @Override
@@ -105,11 +150,16 @@ public class IssueRepo implements VersionedRepository<String, Issue>
                 .set("summary", entity.getSummary())
                 .set("description", entity.getDescription())
                 .set("status", entity.getStatus())
+                .set("issuetype", entity.getIssuetype())
+                .set("assignee", entity.getAssignee())
+                .set("reporter", entity.getReporter())
                 .set("inserted_at", entity.getCreatedAt().format(DateTimeFormatter.ISO_DATE_TIME))
                 .save();
+            entity.setRid(issueState.getIdentity());
             Vertex base = remoteDB.lookupByRID(versionedIssue.getIdentity()).asVertex();
             base.newEdge(HAS_STATE, issueState, false);
             reconnectLatestState(base, issueState);
+            connectToSimilarIssues(remoteDB, versionedIssue, entity);
             remoteDB.commit();
             LOG.info("Persisted state of issue '{}'", entity.getKey());
         }
@@ -130,7 +180,7 @@ public class IssueRepo implements VersionedRepository<String, Issue>
             if(result.getIdentity().isPresent())
             {
                 Issue issue =  new Issue();
-                issue.setRid(result.getIdentity().get().toString());
+                issue.setRid(result.getIdentity().get());
                 issue.setKey(result.getProperty("key"));
                 issue.setProjectKey(result.getProperty("project_key"));
                 issue.setSummary(result.getProperty("summary"));
@@ -141,9 +191,72 @@ public class IssueRepo implements VersionedRepository<String, Issue>
         return Optional.empty();
     }
 
+    private Optional<Issue> vertexToIssue(Vertex vertex)
+    {
+        if(VERTEX_TYPE.equals(vertex.getTypeName()))
+        {
+            Issue issue =  new Issue();
+            issue.setKey(vertex.getString("key"));
+            issue.setProjectKey(vertex.getString("project_key"));
+            issue.setSummary(vertex.getString("summary"));
+            issue.setDescription(vertex.getString("description"));
+            issue.setStatus(vertex.getString("status"));
+            issue.setIssuetype(vertex.getString("issuetype"));
+            issue.setAssignee(vertex.getString("assignee"));
+            issue.setReporter(vertex.getString("reporter"));
+            return Optional.of(issue);
+        }
+        return Optional.empty();
+    }
+
+    private Issue resultToIssue(Result result)
+    {
+        Issue issue =  new Issue();
+        issue.setKey(result.getProperty("key"));
+        issue.setProjectKey(result.getProperty("project_key"));
+        issue.setSummary(result.getProperty("summary"));
+        issue.setDescription(result.getProperty("description"));
+        issue.setStatus(result.getProperty("status"));
+        issue.setIssuetype(result.getProperty("issuetype"));
+        issue.setAssignee(result.getProperty("assignee"));
+        issue.setReporter(result.getProperty("reporter"));
+        return issue;
+    }
+
     private void reconnectLatestState(Vertex base, Vertex latestState)
     {
         base.getEdges(Vertex.DIRECTION.OUT, LATEST_STATE).forEach(Record::delete);
         base.newEdge(LATEST_STATE, latestState, true);
+    }
+
+    private void connectToSimilarIssues(RemoteDatabase remoteDB, Vertex from, Issue vertex)
+    {
+        Vertex currentIssue = remoteDB.lookupByRID(from.getIdentity()).asVertex();
+        cleanSimilarities(currentIssue);
+
+        List<VersionedEntity<String, Issue>> versionedEntities = findAllVersions();
+        for(VersionedEntity<String, Issue> version : versionedEntities)
+        {
+            if(version.getLatest() != null)
+            {
+                Optional<Double> similarityOptional = SimilarityCalculator.compare(version.getLatest(), vertex);
+                if(similarityOptional.isPresent())
+                {
+                    Double similarity = similarityOptional.get();
+                    Vertex otherIssues = remoteDB.lookupByRID(version.getRid()).asVertex();
+                    if(!currentIssue.getIdentity().equals(otherIssues.getIdentity()))
+                    {
+                        currentIssue.newEdge(IS_SIMILAR_TO, otherIssues, true).set("similarity", similarity).save();
+                        otherIssues.newEdge(IS_SIMILAR_TO, currentIssue, true).set("similarity", similarity).save();
+                    }
+                }
+
+            }
+        }
+    }
+
+    private void cleanSimilarities(Vertex from)
+    {
+        from.getEdges(Vertex.DIRECTION.BOTH, IS_SIMILAR_TO).forEach(Record::delete);
     }
 }

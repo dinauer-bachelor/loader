@@ -4,14 +4,14 @@ import com.arcadedb.database.RID;
 
 public class Entity
 {
-    private String rid;
+    private RID rid;
 
-    public String getRid()
+    public RID getRid()
     {
         return rid;
     }
 
-    public Entity setRid(String rid)
+    public Entity setRid(RID rid)
     {
         this.rid = rid;
         return this;

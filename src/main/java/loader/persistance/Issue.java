@@ -1,5 +1,7 @@
 package loader.persistance;
 
+import com.arcadedb.database.RID;
+
 import java.time.ZonedDateTime;
 import java.util.List;
 
@@ -13,6 +15,8 @@ public class Issue extends Entity
     private String status;
     private List<String> components;
     private String projectKey;
+    private String assignee;
+    private String reporter;
 
     public String getKey()
     {
@@ -97,6 +101,24 @@ public class Issue extends Entity
 
     public Issue setProjectKey(String projectKey) {
         this.projectKey = projectKey;
+        return this;
+    }
+
+    public String getAssignee() {
+        return assignee;
+    }
+
+    public Issue setAssignee(String assignee) {
+        this.assignee = assignee;
+        return this;
+    }
+
+    public String getReporter() {
+        return reporter;
+    }
+
+    public Issue setReporter(String reporter) {
+        this.reporter = reporter;
         return this;
     }
 }

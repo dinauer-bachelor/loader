@@ -32,17 +32,30 @@ CREATE PROPERTY issue.summary STRING;
 CREATE PROPERTY issue.description STRING;
 CREATE PROPERTY issue.inserted_at STRING;
 CREATE PROPERTY issue.status STRING;
+CREATE PROPERTY issue.issuetype STRING;
+CREATE PROPERTY issue.assignee STRING;
+CREATE PROPERTY issue.reporter STRING;
 
 CREATE EDGE TYPE has_issue_state;
 CREATE EDGE TYPE latest_issue_state;
 
 CREATE EDGE TYPE belongs_to_project;
 
+CREATE EDGE TYPE is_similar_to;
+CREATE PROPERTY is_similar_to.similarity DOUBLE;
+
 /* Comment */
 CREATE VERTEX TYPE comment_id;
 CREATE PROPERTY comment_id.id STRING;
 
 CREATE VERTEX TYPE comment;
+CREATE PROPERTY comment.id STRING;
+CREATE PROPERTY comment.issue_key STRING;
+CREATE PROPERTY comment.project_key STRING;
 CREATE PROPERTY comment.text STRING;
+CREATE PROPERTY comment.author STRING;
+
+CREATE EDGE TYPE has_comment_state;
+CREATE EDGE TYPE latest_comment_state;
 
 CREATE EDGE TYPE belongs_to_issue;

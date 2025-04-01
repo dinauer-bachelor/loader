@@ -1,5 +1,7 @@
 package loader.persistance;
 
+import org.jboss.resteasy.reactive.common.NotImplementedYet;
+
 import java.util.List;
 
 public class VersionedEntity<K, E> extends Entity
@@ -37,11 +39,10 @@ public class VersionedEntity<K, E> extends Entity
     }
 
     public List<E> getVersions() {
-        return versions;
+        throw new NotImplementedYet();
     }
 
     public VersionedEntity<K, E> setVersions(List<E> versions) {
-        this.versions = versions;
-        return this;
+        throw new NotImplementedYet();
     }
 }

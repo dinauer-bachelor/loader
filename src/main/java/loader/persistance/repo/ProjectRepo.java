@@ -8,7 +8,9 @@ import com.arcadedb.query.sql.executor.ResultSet;
 import com.arcadedb.remote.RemoteDatabase;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
+import loader.persistance.Issue;
 import loader.persistance.Project;
+import loader.persistance.VersionedEntity;
 import org.jboss.resteasy.reactive.common.NotImplementedYet;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -85,6 +87,12 @@ public class ProjectRepo implements VersionedRepository<String, Project>
     }
 
     @Override
+    public List<VersionedEntity<String, Project>> findAllVersions()
+    {
+        throw new NotImplementedYet();
+    }
+
+    @Override
     public Project persist(Project project)
     {
         Vertex versionedProject = init(project.getKey());
@@ -119,7 +127,7 @@ public class ProjectRepo implements VersionedRepository<String, Project>
             if(result.getIdentity().isPresent())
             {
                 Project project =  new Project();
-                project.setRid(result.getIdentity().get().toString());
+                project.setRid(result.getIdentity().get());
                 project.setKey(result.getProperty("key"));
                 project.setName(result.getProperty("name"));
                 project.setDescription(result.getProperty("description"));

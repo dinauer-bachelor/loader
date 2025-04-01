@@ -21,19 +21,14 @@ public class EdgeRepository<E>
         this.remoteDB = remoteDB;
     }
 
-    public void create(String edge, String from, String to)
+    public void create(String edge, RID from, String to)
     {
-        String sql = String.format("CREATE EDGE %s FROM :from TO :to", edge);
-        ResultSet rs = remoteDB.command("sql", sql, Map.ofEntries(new AbstractMap.SimpleEntry<>("from", from), new AbstractMap.SimpleEntry<>("to", to)));
-        if (!rs.hasNext())
-        {
-            throw new RuntimeException(String.format("Failed to persist edge from %s to %s", from, to));
-        }
+
     }
 
     public void delete(String edge, VersionedEntity<?, E> versionedEntity)
     {
-        remoteDB.command("sql", String.format("DELETE FROM %s WHERE @out = :out;", edge), Map.ofEntries(new AbstractMap.SimpleEntry<>("out", versionedEntity.getRid())));
+        remoteDB.command("sql", String.format("DELETE FROM %s WHERE @out = :out;", edge), Map.ofEntries(new Map.Entry[]{new AbstractMap.SimpleEntry<>("out", versionedEntity.getRid())}));
     }
 
     public void reconnect(String edge, VersionedEntity<?, E> versionedEntity, String to)
