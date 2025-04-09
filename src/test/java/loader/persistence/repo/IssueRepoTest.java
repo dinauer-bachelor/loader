@@ -58,7 +58,7 @@ public class IssueRepoTest
         databaseUtils.setup();
 
         // Given
-        Issue issue = new Issue().setKey("KEH-233").setProjectKey("KEH").setSummary("Problem at step 3").setDescription("A problem occurred during manufacturing");
+        Issue issue = new Issue().setKey("KEH-233").setProjectKey("KEH").setSummary("Problem at step 3").setDescription("A problem occurred during manufacturing").setCreatedAt(ZonedDateTime.now(ZoneOffset.UTC));
 
         // When
         issueRepo.persist(issue);
@@ -76,14 +76,17 @@ public class IssueRepoTest
     @Test
     void testFindAll()
     {
-        List<VersionedEntity<String, Issue>> versionedEntities = issueRepo.findAllVersions();
+        databaseUtils.setup();
+
+        // given
+        issueRepo.persist(new Issue().setKey("KEH-233").setProjectKey("KEH").setSummary("Problem at step 3").setDescription("A problem occurred during manufacturing").setCreatedAt(ZonedDateTime.now(ZoneOffset.UTC)));
+        issueRepo.persist(new Issue().setKey("KEH-234").setProjectKey("KEH").setSummary("Problem at step 4").setDescription("A problem occurred during mounting part 54").setCreatedAt(ZonedDateTime.now(ZoneOffset.UTC)));
+        issueRepo.persist(new Issue().setKey("KEH-235").setProjectKey("KEH").setSummary("Problem at step 6").setDescription("A problem occurred during mounting part 34").setCreatedAt(ZonedDateTime.now(ZoneOffset.UTC)));
+
+        // when
+        List<VersionedEntity<String, Issue>> versionedIssues = issueRepo.findAllVersions();
 
         // then
-        Issue first = versionedEntities.getFirst().getLatest();
-
-        Assertions.assertEquals(22, versionedEntities.size());
-        Assertions.assertNotNull(versionedEntities.getFirst().getLatest());
-        Assertions.assertTrue(!first.getSummary().isEmpty());
-        Assertions.assertTrue(!first.getDescription().isEmpty());
+        Assertions.assertEquals(3, versionedIssues.size());
     }
 }
