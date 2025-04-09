@@ -166,6 +166,21 @@
     "reporter": "Kathrin Neumann"
   },
   {
+    "key": "SCM-9",
+    "projectKey": "SCM",
+    "summary": "Intermittent crash in logistics module during load balancing",
+    "description": "The logistics platform experienced intermittent crashes in the load balancing logic between 13:30 and 15:00. Logs indicate excessive CPU usage leading to service instability. A temporary patch was deployed, but a long-term fix is required.",
+    "issuetype": "Bug",
+    "status": "In Progress",
+    "components": [
+      "IT Systems",
+      "Logistics",
+      "Optimization"
+    ],
+    "assignee": "Anna Schneider",
+    "reporter": "Kathrin Neumann"
+  },
+  {
     "key": "SCM-4",
     "projectKey": "SCM",
     "summary": "Packaging damage reported for transmission parts",
@@ -320,6 +335,21 @@
     "projectKey": "FMN",
     "summary": "Fix malfunctioning gate sensor at parking entrance",
     "description": "The sensor at the parking entrance is occasionally failing to detect vehicles. Employees have reported long wait times. Urgent inspection and repair required.",
+    "issuetype": "Task",
+    "status": "To Do",
+    "components": [
+      "Parking",
+      "Access Control",
+      "Electronics"
+    ],
+    "assignee": "Lukas Bauer",
+    "reporter": "Anna Schneider"
+  },
+  {
+    "key": "FMN-7",
+    "projectKey": "FMN",
+    "summary": "Parking gate entry sensor not reliably detecting vehicles",
+    "description": "Vehicle detection at the parking entrance is unreliable due to a faulty sensor. Staff members have reported delays during entry. Immediate diagnostics and repair are necessary.",
     "issuetype": "Task",
     "status": "To Do",
     "components": [
