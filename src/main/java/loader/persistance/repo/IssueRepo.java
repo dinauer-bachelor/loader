@@ -1,24 +1,20 @@
 package loader.persistance.repo;
 
-import com.arcadedb.database.RID;
 import com.arcadedb.database.Record;
 import com.arcadedb.graph.Edge;
 import com.arcadedb.graph.Vertex;
 import com.arcadedb.query.sql.executor.Result;
 import com.arcadedb.query.sql.executor.ResultSet;
 import com.arcadedb.remote.RemoteDatabase;
-import com.arcadedb.schema.DocumentType;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
-import loader.SimilarityCalculator;
+import loader.similarity.SimilarityCalculator;
 import loader.persistance.Issue;
-import loader.persistance.Project;
 import loader.persistance.VersionedEntity;
 import org.jboss.resteasy.reactive.common.NotImplementedYet;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.*;
 

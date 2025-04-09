@@ -1,4 +1,4 @@
-package loader.persistence;
+package loader.utils;
 
 import com.arcadedb.query.sql.executor.BreakStep;
 import com.arcadedb.query.sql.executor.Result;
@@ -14,6 +14,7 @@ import loader.persistance.repo.Database;
 import loader.persistance.repo.IssueRepo;
 import loader.persistance.repo.ProjectRepo;
 import org.graalvm.nativebridge.In;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 
 import java.time.ZoneOffset;
@@ -40,6 +41,7 @@ class Playground
     Database database;
 
     @Test
+    @Disabled
     void build()
     {
         databaseUtils.setup();
@@ -49,6 +51,7 @@ class Playground
     }
 
     @Test
+    @Disabled
     void testSimilarity()
     {
         databaseUtils.setup();
@@ -69,20 +72,5 @@ class Playground
 
         // then
         System.out.println("Lets see");
-    }
-
-    @Test
-    void retrieve()
-    {
-        String sql = "SELECT FROM (TRAVERSE out() FROM (TRAVERSE out() FROM project_id) MAXDEPTH 5)";
-        try(RemoteDatabase remoteDB = database.get())
-        {
-            ResultSet rs = remoteDB.command(Database.SQL, sql);
-            System.out.println(rs);
-            while(rs.hasNext())
-            {
-                Result result = rs.next();
-            }
-        }
     }
 }

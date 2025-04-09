@@ -1,6 +1,8 @@
 package loader.persistance.repo;
 
 import com.arcadedb.database.RID;
+import com.arcadedb.database.Record;
+import com.arcadedb.graph.Edge;
 import com.arcadedb.graph.Vertex;
 import com.arcadedb.query.sql.executor.ResultSet;
 import com.arcadedb.remote.RemoteDatabase;
@@ -16,10 +18,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import javax.xml.crypto.Data;
-import java.util.AbstractMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
+import java.awt.color.CMMException;
+import java.util.*;
 
 @ApplicationScoped
 public class CommentRepo implements VersionedRepository<String, Comment>
@@ -81,15 +81,22 @@ public class CommentRepo implements VersionedRepository<String, Comment>
     {
         Optional<Vertex> x = exists(id);
         if(x.isPresent()) {
-            String sql = String.format("SELECT expand(@in) FROM %s WHERE @out = :out;", LATEST_STATE);
             try(RemoteDatabase remoteDB = database.get())
             {
-                ResultSet rs = remoteDB.command("sql", sql, Map.ofEntries(new AbstractMap.SimpleEntry<>("out", x.get().getIdentity())));
-                return resultSetToOptionalComment(rs);
+                Vertex commentId = x.get();
+                Iterator<Edge> edges = remoteDB.lookupByRID(commentId.getIdentity()).asVertex().getEdges(Vertex.DIRECTION.OUT, LATEST_STATE).iterator();
+                if(edges.hasNext())
+                {
+                    Edge edge = edges.next();
+                    Vertex comment = edge.getInVertex();
+                    return Optional.of(vertexToComment(comment));
+                }
             }
         }
         return Optional.empty();
     }
+
+
 
     @Override
     public List<Comment> findAll()
@@ -113,7 +120,7 @@ public class CommentRepo implements VersionedRepository<String, Comment>
                 .save();
             Vertex base = remoteDB.lookupByRID(versionedComment.getIdentity()).asVertex();
             base.newEdge(HAS_STATE, issueState, false);
-            //reconnectLatestState(base, issueState);
+            reconnectLatestState(base, issueState);
             remoteDB.commit();
             LOG.info("Persisted state of comment '{}'", entity.getId());
         }
@@ -126,9 +133,20 @@ public class CommentRepo implements VersionedRepository<String, Comment>
         throw new NotImplementedYet();
     }
 
-    private Optional<Comment> resultSetToOptionalComment(ResultSet rs)
+    private Comment vertexToComment(Vertex vertex)
     {
+        Comment comment = new Comment();
+        comment.setId(vertex.getString("id"));
+        comment.setIssueKey(vertex.getString("issue_key"));
+        comment.setProjectKey(vertex.getString("project_key"));
+        comment.setText(vertex.getString("text"));
+        comment.setAuthor(vertex.getString("author"));
+        return comment;
+    }
 
-        return Optional.empty();
+    private void reconnectLatestState(Vertex base, Vertex latestState)
+    {
+        base.getEdges(Vertex.DIRECTION.OUT, LATEST_STATE).forEach(Record::delete);
+        base.newEdge(LATEST_STATE, latestState, true);
     }
 }

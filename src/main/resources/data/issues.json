@@ -1,0 +1,363 @@
+[
+  {
+    "key": "DR4-45",
+    "projectKey": "DR4",
+    "summary": "Engine malfunction reported at Augsburg facility",
+    "description": "An engine issue was reported at the Augsburg location. The engine exhibits irregular performance during startup and produces unusual noise. Further diagnostics and inspection are required to identify the root cause.",
+    "issuetype": "Bug",
+    "status": "Open",
+    "components": [
+      "Augsburg",
+      "Problem",
+      "Engine"
+    ],
+    "assignee": "Anna Schneider",
+    "reporter": "Lukas Bauer"
+  },
+  {
+    "key": "DR4-46",
+    "projectKey": "DR4",
+    "summary": "Battery overheating detected during vehicle diagnostics",
+    "description": "A battery unit showed critical temperature readings during standard diagnostic procedures. The overheating occurred after prolonged idling. Root cause analysis is required to assess whether the issue is due to software misconfiguration or hardware fault.",
+    "issuetype": "Bug",
+    "status": "Open",
+    "components": [
+      "Diagnostics",
+      "Battery",
+      "Problem"
+    ],
+    "assignee": "Miriam Vogel",
+    "reporter": "Kathrin Neumann"
+  },
+  {
+    "key": "DR4-47",
+    "projectKey": "DR4",
+    "summary": "Inconsistent CAN bus communication between ECUs",
+    "description": "During integration testing, irregularities in CAN bus communication between the engine control unit (ECU) and the transmission control unit were observed. The messages occasionally fail to transmit or are delayed. Investigation needed to determine if signal integrity or timing issues are involved.",
+    "issuetype": "Bug",
+    "status": "In Progress",
+    "components": [
+      "Electronics",
+      "CAN Bus",
+      "Engine"
+    ],
+    "assignee": "Tobias Meier",
+    "reporter": "Anna Schneider"
+  },
+  {
+    "key": "DR4-48",
+    "projectKey": "DR4",
+    "summary": "Headlight calibration fails in cold weather conditions",
+    "description": "Headlight auto-calibration system fails to adjust correctly in temperatures below -5°C. Logs show deviation in vertical alignment, possibly due to sensor latency or condensation effects. Field data from tests in Nuremberg support the observations.",
+    "issuetype": "Bug",
+    "status": "Open",
+    "components": [
+      "Lighting",
+      "Calibration",
+      "Nuremberg"
+    ],
+    "assignee": "Kathrin Neumann",
+    "reporter": "Lukas Bauer"
+  },
+  {
+    "key": "DR5-1",
+    "projectKey": "DR5",
+    "summary": "Paint defects on rear bumper during assembly line quality check",
+    "description": "Multiple vehicles showed minor paint inconsistencies on the rear bumper. The issue was discovered during quality control at the end of the assembly line. Affected units are temporarily held back for manual inspection.",
+    "issuetype": "Bug",
+    "status": "Open",
+    "components": [
+      "Assembly",
+      "Paint Shop",
+      "Quality Control"
+    ],
+    "assignee": "Miriam Vogel",
+    "reporter": "Tobias Meier"
+  },
+  {
+    "key": "DR5-2",
+    "projectKey": "DR5",
+    "summary": "Steering wheel misalignment detected in final inspection",
+    "description": "Several DR5 units show a slight misalignment of the steering wheel despite correct wheel positioning. The issue appears to originate during the interior installation phase. Further investigation is needed to adjust tooling or process steps.",
+    "issuetype": "Bug",
+    "status": "In Progress",
+    "components": [
+      "Interior",
+      "Steering",
+      "Inspection"
+    ],
+    "assignee": "Lukas Bauer",
+    "reporter": "Anna Schneider"
+  },
+  {
+    "key": "DR5-3",
+    "projectKey": "DR5",
+    "summary": "Sensor harness incorrectly routed in engine compartment",
+    "description": "Technicians identified incorrectly routed sensor harnesses in the engine bay, which could lead to abrasion or heat damage. The routing guidelines need to be updated and communicated to the production staff.",
+    "issuetype": "Bug",
+    "status": "Open",
+    "components": [
+      "Engine",
+      "Wiring",
+      "Production"
+    ],
+    "assignee": "Kathrin Neumann",
+    "reporter": "Miriam Vogel"
+  },
+  {
+    "key": "DR5-4",
+    "projectKey": "DR5",
+    "summary": "Dashboard touchscreen unresponsive after initial boot",
+    "description": "After the first boot-up, the dashboard touchscreen occasionally fails to respond to user input. This problem was observed on several units at the electronics testing station. A firmware rollback temporarily resolves the issue.",
+    "issuetype": "Bug",
+    "status": "Open",
+    "components": [
+      "Electronics",
+      "HMI",
+      "Testing"
+    ],
+    "assignee": "Tobias Meier",
+    "reporter": "Lukas Bauer"
+  },
+
+  {
+    "key": "SCM-1",
+    "projectKey": "SCM",
+    "summary": "Delayed delivery of critical brake components from supplier",
+    "description": "The scheduled delivery of brake components from Supplier X has been delayed by five days. This may impact the production timeline for vehicle batches planned next week. Root cause appears to be customs clearance issues.",
+    "issuetype": "Bug",
+    "status": "Open",
+    "components": [
+      "Procurement",
+      "Logistics",
+      "Supplier X"
+    ],
+    "assignee": "Miriam Vogel",
+    "reporter": "Lukas Bauer"
+  },
+  {
+    "key": "SCM-2",
+    "projectKey": "SCM",
+    "summary": "Inventory mismatch in central warehouse",
+    "description": "An automated stock audit revealed a discrepancy of 128 units in the inventory of wheel bearings. Investigation needed to determine whether this is due to scanning errors, misplaced items, or system sync problems.",
+    "issuetype": "Bug",
+    "status": "Open",
+    "components": [
+      "Inventory",
+      "Warehouse",
+      "Data Sync"
+    ],
+    "assignee": "Tobias Meier",
+    "reporter": "Anna Schneider"
+  },
+  {
+    "key": "SCM-3",
+    "projectKey": "SCM",
+    "summary": "Logistics software failure during route optimization",
+    "description": "The routing module of the logistics system failed to optimize outbound deliveries between 14:00 and 16:00 due to a memory overflow. Temporary fix applied, but permanent resolution is needed.",
+    "issuetype": "Bug",
+    "status": "In Progress",
+    "components": [
+      "IT Systems",
+      "Logistics",
+      "Optimization"
+    ],
+    "assignee": "Anna Schneider",
+    "reporter": "Kathrin Neumann"
+  },
+  {
+    "key": "SCM-4",
+    "projectKey": "SCM",
+    "summary": "Packaging damage reported for transmission parts",
+    "description": "Several crates of transmission parts arrived with damaged packaging, raising concerns about possible internal damage. Inspection and quality check needed before release to production.",
+    "issuetype": "Bug",
+    "status": "Open",
+    "components": [
+      "Shipping",
+      "Quality Control",
+      "Transmission"
+    ],
+    "assignee": "Lukas Bauer",
+    "reporter": "Tobias Meier"
+  },
+  {
+    "key": "SCM-5",
+    "projectKey": "SCM",
+    "summary": "Automated reordering threshold set too low for brake pads",
+    "description": "Brake pad stock reached critical levels before the system triggered an automated reorder. Threshold settings need to be adjusted to prevent future shortages.",
+    "issuetype": "Improvement",
+    "status": "Open",
+    "components": [
+      "Inventory",
+      "Procurement",
+      "Automation"
+    ],
+    "assignee": "Kathrin Neumann",
+    "reporter": "Miriam Vogel"
+  },
+  {
+    "key": "SCM-6",
+    "projectKey": "SCM",
+    "summary": "Incorrect labeling on incoming shipments from Supplier Z",
+    "description": "Several shipments from Supplier Z were labeled with outdated product codes, causing delays in warehouse intake. Supplier has been notified, but process improvement is needed to prevent recurrence.",
+    "issuetype": "Bug",
+    "status": "Open",
+    "components": [
+      "Supplier Z",
+      "Warehouse",
+      "Labeling"
+    ],
+    "assignee": "Miriam Vogel",
+    "reporter": "Anna Schneider"
+  },
+  {
+    "key": "FMA-1",
+    "projectKey": "FMA",
+    "summary": "Clean exterior windows in Building A",
+    "description": "Schedule and perform exterior window cleaning for all floors of Building A. Weather conditions should be considered before finalizing the date.",
+    "issuetype": "Task",
+    "status": "To Do",
+    "components": [
+      "Maintenance",
+      "Cleaning",
+      "Building A"
+    ],
+    "assignee": "Tobias Meier",
+    "reporter": "Kathrin Neumann"
+  },
+  {
+    "key": "FMA-2",
+    "projectKey": "FMA",
+    "summary": "Inspect HVAC system in the main lobby",
+    "description": "Routine inspection and filter replacement for the HVAC unit in the main lobby area. Last check was 3 months ago.",
+    "issuetype": "Task",
+    "status": "To Do",
+    "components": [
+      "HVAC",
+      "Inspection",
+      "Lobby"
+    ],
+    "assignee": "Anna Schneider",
+    "reporter": "Miriam Vogel"
+  },
+  {
+    "key": "FMA-3",
+    "projectKey": "FMA",
+    "summary": "Test emergency lighting on all floors",
+    "description": "Run a full functionality test of emergency exit lights across all floors to ensure compliance with safety standards.",
+    "issuetype": "Task",
+    "status": "To Do",
+    "components": [
+      "Safety",
+      "Lighting",
+      "Inspection"
+    ],
+    "assignee": "Lukas Bauer",
+    "reporter": "Tobias Meier"
+  },
+  {
+    "key": "FMA-4",
+    "projectKey": "FMA",
+    "summary": "Restock cleaning supplies in janitor rooms",
+    "description": "Check and refill cleaning supplies in janitor rooms of Buildings A and C. Notify supplier if stock is low.",
+    "issuetype": "Task",
+    "status": "To Do",
+    "components": [
+      "Supplies",
+      "Cleaning",
+      "Building C"
+    ],
+    "assignee": "Miriam Vogel",
+    "reporter": "Anna Schneider"
+  },
+  {
+    "key": "FMN-1",
+    "projectKey": "FMN",
+    "summary": "Prepare meeting room and refreshments for business partner visit",
+    "description": "Set up the executive meeting room for the visit of international business partners. Ensure seating, audio/visual equipment, and refreshments are ready one hour in advance.",
+    "issuetype": "Task",
+    "status": "To Do",
+    "components": [
+      "Hospitality",
+      "Meeting Room",
+      "Visitors"
+    ],
+    "assignee": "Anna Schneider",
+    "reporter": "Kathrin Neumann"
+  },
+  {
+    "key": "FMN-2",
+    "projectKey": "FMN",
+    "summary": "Clean and prepare entrance area for partner reception",
+    "description": "Thoroughly clean the main entrance area, ensure all signage is in place, and flower arrangements are refreshed before welcoming business partners from Austria.",
+    "issuetype": "Task",
+    "status": "To Do",
+    "components": [
+      "Entrance",
+      "Cleaning",
+      "Visitors"
+    ],
+    "assignee": "Miriam Vogel",
+    "reporter": "Lukas Bauer"
+  },
+  {
+    "key": "FMN-3",
+    "projectKey": "FMN",
+    "summary": "Repair potholes in access road to loading zone",
+    "description": "Multiple potholes were reported on the main access road leading to the logistics loading zone. Temporary markings are in place. Repair work is needed to ensure safety for delivery vehicles.",
+    "issuetype": "Task",
+    "status": "To Do",
+    "components": [
+      "Road Maintenance",
+      "Logistics",
+      "Safety"
+    ],
+    "assignee": "Tobias Meier",
+    "reporter": "Kathrin Neumann"
+  },
+  {
+    "key": "FMN-4",
+    "projectKey": "FMN",
+    "summary": "Fix malfunctioning gate sensor at parking entrance",
+    "description": "The sensor at the parking entrance is occasionally failing to detect vehicles. Employees have reported long wait times. Urgent inspection and repair required.",
+    "issuetype": "Task",
+    "status": "To Do",
+    "components": [
+      "Parking",
+      "Access Control",
+      "Electronics"
+    ],
+    "assignee": "Lukas Bauer",
+    "reporter": "Anna Schneider"
+  },
+  {
+    "key": "FMN-5",
+    "projectKey": "FMN",
+    "summary": "Replace broken pavement tiles near cafeteria",
+    "description": "Several pavement tiles near the cafeteria entrance are cracked or loose, posing a tripping hazard. Area needs to be secured and repairs scheduled.",
+    "issuetype": "Task",
+    "status": "To Do",
+    "components": [
+      "Outdoor",
+      "Safety",
+      "Cafeteria"
+    ],
+    "assignee": "Kathrin Neumann",
+    "reporter": "Tobias Meier"
+  },
+  {
+    "key": "FMN-6",
+    "projectKey": "FMN",
+    "summary": "Inspect and clean storm drains in parking lot area",
+    "description": "Heavy rainfall led to water pooling in the southwest parking area. Storm drains may be partially clogged and should be inspected and cleaned.",
+    "issuetype": "Task",
+    "status": "To Do",
+    "components": [
+      "Drainage",
+      "Parking Lot",
+      "Maintenance"
+    ],
+    "assignee": "Miriam Vogel",
+    "reporter": "Lukas Bauer"
+  }
+]

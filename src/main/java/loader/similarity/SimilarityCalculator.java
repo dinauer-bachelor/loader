@@ -1,18 +1,17 @@
-package loader;
+package loader.similarity;
 
 import loader.persistance.Issue;
 import org.apache.commons.text.similarity.CosineSimilarity;
+import org.apache.tika.langdetect.optimaize.OptimaizeLangDetector;
+import org.apache.tika.language.detect.LanguageDetector;
+import org.apache.tika.language.detect.LanguageResult;
 
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
+import java.util.*;
 
 public class SimilarityCalculator
 {
     private static final double SUMMARY_WEIGHT = 0.3;
     private static final double DESCRIPTION_WEIGHT = 0.7;
-    private static final List<String> STOP_WORDS = List.of("the", "with", "has", "a", "or", "and", "to", "in", "on", "into", "onto", "am", "are", "is");
 
     public static Optional<Double> compare(Issue issue1, Issue issue2)
     {
@@ -32,20 +31,24 @@ public class SimilarityCalculator
 
     protected static Map<CharSequence, Integer> stringToVector(String string)
     {
+        String language = getLanguage(string);
         Map<CharSequence, Integer> vector = new HashMap<>();
-        String[] tokens = string.split("\\s+");
-        for(String token : tokens)
+        List<String> tokens = tokenize(string);
+        List<String> tokensWithoutStopwords = new StopwordRemover().remove(tokens, language);
+        for(String token : tokensWithoutStopwords)
         {
-            String normalizedToken = normalizeToken(token);
-            if(!STOP_WORDS.contains(normalizedToken))
-            {
-                int count = Optional.ofNullable(vector.get(normalizedToken)).orElse(0);
-                count++;
-                vector.put(normalizedToken, count);
-            }
-
+            int count = Optional.ofNullable(vector.get(token)).orElse(0);
+            count++;
+            vector.put(token, count);
         }
         return vector;
+    }
+
+    protected static List<String> tokenize(String text)
+    {
+        String language = getLanguage(text);
+        List<String> token = Arrays.stream(text.split("\\s+")).toList();
+        return token.stream().map(SimilarityCalculator::normalizeToken).filter(item -> !item.isEmpty()).toList();
     }
 
     protected static String normalizeToken(String token)
@@ -55,6 +58,12 @@ public class SimilarityCalculator
         {
             token = token.replace(character, "");
         }
-        return token.toLowerCase();
+        return token.strip().toLowerCase();
+    }
+
+    private static String getLanguage(String text)
+    {
+        LanguageDetector languageDetector = new OptimaizeLangDetector().loadModels();
+        return languageDetector.detect(text).getLanguage();
     }
 }

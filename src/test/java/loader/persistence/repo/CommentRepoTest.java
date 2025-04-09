@@ -54,6 +54,8 @@ public class CommentRepoTest
     @Test
     void persistComment()
     {
+        databaseUtils.setup();
+
         // Given
         Comment comment = new Comment().setId("2001").setIssueKey("KAH-344").setProjectKey("KAH").setText("Issue was resolved with help of Chat GPT :)");
 

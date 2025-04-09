@@ -1,8 +1,6 @@
-package loader;
+package loader.similarity;
 
 import loader.persistance.Issue;
-import org.apache.commons.text.similarity.CosineSimilarity;
-import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -45,12 +43,13 @@ class SimilarityCalculatorTest
         Map<CharSequence, Integer> vector1 = SimilarityCalculator.stringToVector(text1);
 
         // then
+        // "meine" and "ist" are stopwords and get removed
         assertNotNull(vector1);
-        assertEquals(4, vector1.keySet().size());
+        assertEquals(2, vector1.keySet().size());
         assertEquals(2, vector1.get("katze"));
-        assertEquals(2, vector1.get("meine"));
-        assertEquals(2, vector1.get("ist"));
         assertEquals(2, vector1.get("flauschig"));
+        assertNull(vector1.get("meine"));
+        assertNull(vector1.get("ist"));
     }
 
     @Test
@@ -82,8 +81,8 @@ class SimilarityCalculatorTest
         double similarity2 = SimilarityCalculator.compareStrings(text21, text22);
 
         // then
-        assertTrue(similarity1 > 0.5);
-        assertTrue(similarity2 > 0.9);
+        assertEquals(0.3, similarity1, 0.1);
+        assertEquals(0.9, similarity2, 0.1);
     }
 
     @Test

@@ -1,4 +1,4 @@
-package loader.persistence;
+package loader.utils;
 
 import io.quarkus.test.junit.QuarkusTest;
 import jakarta.inject.Inject;
@@ -10,6 +10,7 @@ import loader.persistance.repo.CommentRepo;
 import loader.persistance.repo.IssueRepo;
 import loader.persistance.repo.ProjectRepo;
 import org.graalvm.nativebridge.In;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 
 import java.time.ZoneOffset;
@@ -33,6 +34,7 @@ class SampleGraphBuilder
     CommentRepo commentRepo;
 
     @Test
+    @Disabled
     void build()
     {
         databaseUtils.setup();

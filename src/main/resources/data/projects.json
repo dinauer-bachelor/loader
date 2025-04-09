@@ -1,0 +1,27 @@
+[
+  {
+    "key": "DR4",
+    "name": "Production of DR4",
+    "description": "This projects centers around problems and incidents during production of the DR4 car."
+  },
+  {
+    "key": "DR5",
+    "name": "Production of DR5",
+    "description": "Problems and incidents during production of the DR5 car are collected and solved one by one."
+  },
+  {
+    "key": "SCM",
+    "name": "Supply Chain Management",
+    "description": "Management and optimization of supply chain processes, including procurement, storage, transportation, and logistics."
+  },
+  {
+    "key": "FMA",
+    "name": "Facility Management Augsburg",
+    "description": "Coordination of all technical and infrastructural facilities at the Augsburg site."
+  },
+  {
+    "key": "FMN",
+    "name": "Facility Management Nuremberg",
+    "description": "Responsible for the operation, maintenance, and organization of building and production plant infrastructure at the Nuremberg site."
+  }
+]
